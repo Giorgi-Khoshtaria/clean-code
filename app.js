@@ -1,30 +1,33 @@
 var taskInput = document.getElementById("new-task");
 var addButton = document.getElementsByTagName("button")[0];
-var incompleteTaskHolder = document.getElementById("incompletetasks");
+var incompleteTaskHolder = document.getElementById("incomplete-tsks");
 var completedTasksHolder = document.getElementById("completed-tasks");
 
 var createNewTaskElement = function (taskString) {
   var listItem = document.createElement("li");
+  listItem.className = "task-item";
 
   var checkBox = document.createElement("input");
-  var label = document.createElement("label");
-  var editInput = document.createElement("input");
-  var editButton = document.createElement("button");
-  var deleteButton = document.createElement("button");
-  var deleteButtonImg = document.createElement("img");
-
-  label.innerText = taskString;
-  label.className = "task";
-
   checkBox.type = "checkbox";
+  checkBox.className = "checkbox";
+
+  var label = document.createElement("label");
+  label.innerText = taskString;
+  label.className = "task task-item-label";
+
+  var editInput = document.createElement("input");
   editInput.type = "text";
-  editInput.className = "task";
+  editInput.className = "task text-inputs";
 
+  var editButton = document.createElement("button");
   editButton.innerText = "Edit";
-  editButton.className = "edit";
+  editButton.className = "edit button";
 
+  var deleteButton = document.createElement("button");
   deleteButton.className = "delete";
+  var deleteButtonImg = document.createElement("img");
   deleteButtonImg.src = "./remove.svg";
+  deleteButtonImg.className = "delete-image";
   deleteButton.appendChild(deleteButtonImg);
 
   listItem.appendChild(checkBox);
@@ -37,13 +40,13 @@ var createNewTaskElement = function (taskString) {
 };
 
 var addTask = function () {
-  if (!taskInput.value.trim()) return;
+  if (!taskInput.value.trim()) return; // Prevent empty input
 
   var listItem = createNewTaskElement(taskInput.value);
   incompleteTaskHolder.appendChild(listItem);
   bindTaskEvents(listItem, taskCompleted);
 
-  taskInput.value = "";
+  taskInput.value = ""; // Clear input after adding
 };
 
 var editTask = function () {
@@ -51,9 +54,9 @@ var editTask = function () {
   var editInput = listItem.querySelector("input[type=text]");
   var label = listItem.querySelector("label");
   var editBtn = listItem.querySelector(".edit");
-  var containsClass = listItem.classList.contains("editMode");
+  var isEditMode = listItem.classList.contains("editMode");
 
-  if (containsClass) {
+  if (isEditMode) {
     label.innerText = editInput.value;
     editBtn.innerText = "Edit";
   } else {
@@ -72,12 +75,16 @@ var deleteTask = function () {
 
 var taskCompleted = function () {
   var listItem = this.parentNode;
+  listItem.querySelector(".task-item-label").classList.add("complated-label");
   completedTasksHolder.appendChild(listItem);
   bindTaskEvents(listItem, taskIncomplete);
 };
 
 var taskIncomplete = function () {
   var listItem = this.parentNode;
+  listItem
+    .querySelector(".task-item-label")
+    .classList.remove("complated-label");
   incompleteTaskHolder.appendChild(listItem);
   bindTaskEvents(listItem, taskCompleted);
 };
@@ -92,7 +99,7 @@ var bindTaskEvents = function (taskListItem, checkBoxEventHandler) {
   checkBox.onchange = checkBoxEventHandler;
 };
 
-// Bind events for existing tasks
+// Bind existing tasks
 for (var i = 0; i < incompleteTaskHolder.children.length; i++) {
   bindTaskEvents(incompleteTaskHolder.children[i], taskCompleted);
 }
@@ -101,6 +108,8 @@ for (var i = 0; i < completedTasksHolder.children.length; i++) {
   bindTaskEvents(completedTasksHolder.children[i], taskIncomplete);
 }
 
-addButton.onclick = addTask;
+// Add event listener to the Add button
+addButton.addEventListener("click", addTask);
+
 addButton.addEventListener("click", addTask);
 addButton.addEventListener("click", ajaxRequest);
